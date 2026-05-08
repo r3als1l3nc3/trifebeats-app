@@ -1,21 +1,19 @@
-import { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
-export function proxys(req: NextRequest) {
-  const username = process.env.ADMIN_USERNAME || "admin";
-  const password = process.env.ADMIN_PASSWORD;
+export function proxy(request: NextRequest) {
+  const auth = request.headers.get("authorization");
 
-  if (!password) {
-    return new Response("Admin password is not set.", { status: 500 });
-  }
+  if (auth) {
+    const [, encoded] = auth.split(" ");
+    const decoded = atob(encoded);
+    const [user, pass] = decoded.split(":");
 
-  const authHeader = req.headers.get("authorization");
-
-  if (authHeader) {
-    const basicAuth = authHeader.split(" ")[1];
-    const [user, pass] = atob(basicAuth).split(":");
-
-    if (user === username && pass === password) {
-      return;
+    if (
+      user === process.env.ADMIN_USERNAME &&
+      pass === process.env.ADMIN_PASSWORD
+    ) {
+      return NextResponse.next();
     }
   }
 
@@ -26,6 +24,7 @@ export function proxys(req: NextRequest) {
     },
   });
 }
+
 export const config = {
   matcher: ["/admin/:path*"],
-}
+};
