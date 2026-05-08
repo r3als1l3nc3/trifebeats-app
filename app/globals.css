@@ -1,26 +1,567 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  margin: 0;
+  background: #050505;
+  color: white;
   font-family: Arial, Helvetica, sans-serif;
+}
+
+.site {
+  min-height: 100vh;
+  background: #050505;
+  color: white;
+}
+
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: 72px;
+  padding: 0 42px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(0, 0, 0, 0.92);
+  border-bottom: 1px solid rgba(234, 179, 8, 0.25);
+  backdrop-filter: blur(14px);
+}
+
+.brand {
+  color: #facc15;
+  font-weight: 900;
+  letter-spacing: 10px;
+  font-size: 26px;
+}
+
+.navLinks {
+  display: flex;
+  gap: 42px;
+}
+
+.navLinks a {
+  color: white;
+  text-decoration: none;
+  text-transform: uppercase;
+  font-weight: 900;
+  font-size: 14px;
+}
+
+.navLinks a:hover {
+  color: #facc15;
+}
+
+.hero {
+  min-height: 82vh;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at center, rgba(250, 204, 21, 0.22), transparent 32%),
+    linear-gradient(to bottom, #050505, #000);
+}
+
+.heroSmoke {
+  position: absolute;
+  inset: 0;
+  background-image: url("/cover.png");
+  background-size: cover;
+  background-position: center;
+  opacity: 0.28;
+  filter: blur(3px);
+  transform: scale(1.08);
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.62);
+}
+
+.heroContent {
+  position: relative;
+  z-index: 2;
+  max-width: 1100px;
+  padding: 40px 20px;
+}
+
+.eyebrow {
+  color: #facc15;
+  text-transform: uppercase;
+  letter-spacing: 12px;
+  font-size: 14px;
+  margin-bottom: 26px;
+  font-weight: 800;
+}
+
+.hero h1 {
+  font-size: clamp(64px, 11vw, 150px);
+  line-height: 0.9;
+  margin: 0 0 28px;
+  font-weight: 1000;
+  letter-spacing: -5px;
+}
+
+.hero h1 span {
+  color: #facc15;
+}
+
+.tagline {
+  text-transform: uppercase;
+  letter-spacing: 6px;
+  font-size: 19px;
+  color: #e5e5e5;
+  margin-bottom: 38px;
+  font-weight: 800;
+}
+
+.goldButton,
+.cardBottom button,
+.contactBox button {
+  background: linear-gradient(180deg, #fde047, #eab308);
+  color: #050505;
+  border: 0;
+  border-radius: 12px;
+  padding: 16px 38px;
+  text-decoration: none;
+  text-transform: uppercase;
+  font-weight: 1000;
+  letter-spacing: 1px;
+  box-shadow: 0 0 28px rgba(250, 204, 21, 0.25);
+  cursor: pointer;
+}
+
+.section {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 78px 34px;
+}
+
+.sectionTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 24px;
+  margin-bottom: 30px;
+}
+
+.section h2,
+.sectionTop h2,
+.contactBox h2 {
+  font-size: clamp(34px, 4vw, 54px);
+  margin: 0 0 10px;
+  text-transform: uppercase;
+  font-weight: 1000;
+}
+
+.section p,
+.sectionTop p,
+.contactBox p {
+  color: #a3a3a3;
+  font-size: 18px;
+}
+
+.outlineButton {
+  border: 1px solid #facc15;
+  color: #facc15;
+  background: transparent;
+  padding: 14px 28px;
+  border-radius: 10px;
+  text-transform: uppercase;
+  font-weight: 900;
+}
+
+.beatGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+.beatCard {
+  background: linear-gradient(180deg, #121212, #070707);
+  border: 1px solid rgba(250, 204, 21, 0.35);
+  border-radius: 22px;
+  padding: 18px;
+  box-shadow: 0 0 35px rgba(0, 0, 0, 0.35);
+}
+
+.beatCard:hover {
+  border-color: #facc15;
+  box-shadow: 0 0 45px rgba(250, 204, 21, 0.22);
+}
+
+.coverWrap {
+  height: 170px;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.coverWrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.beatCard h3 {
+  font-size: 24px;
+  margin: 0 0 12px;
+}
+
+.meta {
+  color: #bdbdbd;
+  margin: 0 0 8px;
+}
+
+.mood {
+  color: #facc15;
+  font-weight: 900;
+  margin: 0 0 18px;
+}
+
+.beatCard audio {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.cardBottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cardBottom strong {
+  font-size: 24px;
+}
+
+.cardBottom button {
+  padding: 12px 22px;
+}
+
+.licenseGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 26px;
+}
+
+.licenseCard {
+  text-align: center;
+  border: 1px solid rgba(250, 204, 21, 0.35);
+  background: #080808;
+  border-radius: 22px;
+  padding: 42px 24px;
+}
+
+.licenseCard h3 {
+  text-transform: uppercase;
+  font-size: 24px;
+}
+
+.licenseCard strong {
+  color: #facc15;
+  font-size: 42px;
+}
+
+.contactBox {
+  max-width: 1280px;
+  margin: 0 auto 70px;
+  padding: 42px;
+  border: 1px solid rgba(250, 204, 21, 0.35);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at right, rgba(250, 204, 21, 0.12), transparent 30%),
+    #080808;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+}
+
+@media (max-width: 1050px) {
+  .beatGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .licenseGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .nav {
+    padding: 0 18px;
+  }
+
+  .brand {
+    font-size: 18px;
+    letter-spacing: 5px;
+  }
+
+  .navLinks {
+    gap: 14px;
+    font-size: 12px;
+  }
+
+  .beatGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .sectionTop,
+  .contactBox {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+.adminSite {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top right, rgba(250, 204, 21, 0.14), transparent 28%),
+    #050505;
+  color: white;
+  padding: 34px;
+}
+
+.adminNav {
+  max-width: 1300px;
+  margin: 0 auto 34px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid rgba(250, 204, 21, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.adminNav h1 {
+  color: #facc15;
+  font-size: clamp(34px, 5vw, 58px);
+  margin: 0;
+  font-weight: 1000;
+  letter-spacing: -2px;
+}
+
+.adminNav p {
+  color: #a3a3a3;
+  margin: 8px 0 0;
+}
+
+.adminNav a {
+  background: linear-gradient(180deg, #fde047, #eab308);
+  color: #050505;
+  padding: 14px 24px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 1000;
+  text-transform: uppercase;
+}
+
+.adminStats {
+  max-width: 1300px;
+  margin: 0 auto 34px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+
+.adminStats div {
+  background: #090909;
+  border: 1px solid rgba(250, 204, 21, 0.25);
+  border-radius: 20px;
+  padding: 22px;
+}
+
+.adminStats p {
+  color: #a3a3a3;
+  margin: 0 0 8px;
+}
+
+.adminStats strong {
+  color: #facc15;
+  font-size: 32px;
+}
+
+.adminGrid {
+  max-width: 1300px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  gap: 24px;
+}
+
+.adminPanel {
+  background: linear-gradient(180deg, #101010, #070707);
+  border: 1px solid rgba(250, 204, 21, 0.3);
+  border-radius: 22px;
+  padding: 24px;
+}
+
+.adminPanel h2 {
+  margin: 0 0 20px;
+  font-size: 28px;
+  text-transform: uppercase;
+}
+
+.adminPanel input {
+  width: 100%;
+  box-sizing: border-box;
+  background: #000;
+  border: 1px solid rgba(250, 204, 21, 0.28);
+  border-radius: 12px;
+  padding: 15px;
+  color: white;
+  margin-bottom: 14px;
+  outline: none;
+}
+
+.adminPanel input:focus {
+  border-color: #facc15;
+}
+
+.adminPanel button,
+.panelTop button {
+  background: linear-gradient(180deg, #fde047, #eab308);
+  color: #050505;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 18px;
+  font-weight: 1000;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.libraryPanel {
+  min-height: 500px;
+}
+
+.panelTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+
+.adminMuted {
+  color: #a3a3a3;
+}
+
+.adminBeatList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.adminBeatRow {
+  background: #050505;
+  border: 1px solid rgba(250, 204, 21, 0.2);
+  border-radius: 18px;
+  padding: 14px;
+  display: grid;
+  grid-template-columns: 92px 1fr auto;
+  gap: 16px;
+  align-items: center;
+}
+
+.adminBeatRow img {
+  width: 92px;
+  height: 92px;
+  object-fit: cover;
+  border-radius: 14px;
+}
+
+.adminBeatInfo h3 {
+  margin: 0 0 6px;
+  font-size: 22px;
+}
+
+.adminBeatInfo p {
+  margin: 0 0 6px;
+  color: #a3a3a3;
+}
+
+.adminBeatInfo span {
+  color: #facc15;
+  font-weight: 1000;
+}
+
+.adminBeatInfo audio {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.deleteButton {
+  background: rgba(239, 68, 68, 0.15) !important;
+  color: #f87171 !important;
+}
+
+@media (max-width: 1000px) {
+  .adminStats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .adminGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 650px) {
+  .adminNav {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+  }
+
+  .adminStats {
+    grid-template-columns: 1fr;
+  }
+
+  .adminBeatRow {
+    grid-template-columns: 1fr;
+  }
+
+  .adminBeatRow img {
+    width: 100%;
+    height: 180px;
+  }
+}
+.uploadBox {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(250, 204, 21, 0.08);
+  border: 1px dashed rgba(250, 204, 21, 0.55);
+  border-radius: 12px;
+  padding: 18px;
+  color: #facc15;
+  margin-bottom: 14px;
+  text-align: center;
+  font-weight: 1000;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.uploadBox input {
+  display: none;
+}
+.licenseSelect {
+  width: 100%;
+  background: #050505;
+  color: #facc15;
+  border: 1px solid rgba(250, 204, 21, 0.45);
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 18px;
+  font-weight: 900;
+  outline: none;
+  cursor: pointer;
+}
+
+.licenseSelect:focus {
+  border-color: #facc15;
 }

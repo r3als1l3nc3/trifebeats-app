@@ -1,65 +1,201 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useEffect, useState } from "react";
+import { supabase } from "./lib/supabase";
+
+type Beat = {
+  id: string | number;
+  title: string;
+  genre: string;
+  bpm: number;
+  mood: string;
+  price: string;
+  audio: string;
+  cover: string;
+};
+
+const licenseOptions = [
+  { name: "Basic Lease", price: "$29" },
+  { name: "Premium Lease", price: "$79" },
+  { name: "Exclusive", price: "$299" },
+];
+
+export default function HomePage() {
+  const [beats, setBeats] = useState<Beat[]>([]);
+  const [selectedLicenses, setSelectedLicenses] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    async function loadBeats() {
+      const { data, error } = await supabase.from("beats").select("*");
+
+      if (error) {
+        console.error(error);
+        return;
+      }
+
+      setBeats(data || []);
+    }
+
+    loadBeats();
+  }, []);
+
+  function getLicenseForBeat(beat: Beat) {
+    return selectedLicenses[beat.audio] || "Basic Lease";
+  }
+
+  function getPriceForLicense(licenseName: string) {
+    return licenseOptions.find((license) => license.name === licenseName)?.price || "$29";
+  }
+
+  async function buyBeat(beat: Beat) {
+    const licenseType = getLicenseForBeat(beat);
+    const price = getPriceForLicense(licenseType);
+
+    const res = await fetch("/api/checkout", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        beatTitle: `${beat.title} - ${licenseType}`,
+        price,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (data.url) {
+      window.location.href = data.url;
+    }
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <main className="site">
+      <nav className="nav">
+        <div className="brand">TRIFEBEATS</div>
+
+        <div className="navLinks">
+          <a href="#beats">Beats</a>
+          <a href="#licenses">Licenses</a>
+          <a href="#contact">Contact</a>
+        </div>
+      </nav>
+
+      <section className="hero">
+        <div className="heroSmoke"></div>
+
+        <div className="heroContent">
+          <p className="eyebrow">Silence × Spontaneous</p>
+
+          <h1>
+            TRIFE<span>BEATS</span>
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+
+          <p className="tagline">Industry-Ready Beats. No Industry Price.</p>
+
+          <a href="#beats" className="goldButton">
+            Browse Beats
+          </a>
+        </div>
+      </section>
+
+      <section id="beats" className="section">
+        <div className="sectionTop">
+          <div>
+            <h2>Featured Beats</h2>
+            <p>Pick a vibe, press play, and start writing.</p>
+          </div>
+
+          <button className="outlineButton">View All Beats</button>
+        </div>
+
+        <div className="beatGrid">
+          {beats.map((beat) => {
+            const licenseType = getLicenseForBeat(beat);
+            const licensePrice = getPriceForLicense(licenseType);
+
+            return (
+              <div className="beatCard" key={beat.audio}>
+                <div className="coverWrap">
+                  <img src={beat.cover || "/cover.png"} alt={beat.title} />
+                </div>
+
+                <h3>{beat.title}</h3>
+
+                <p className="meta">
+                  {beat.genre} • {beat.bpm} BPM
+                </p>
+
+                <p className="mood">{beat.mood}</p>
+
+                <audio controls>
+                  <source src={beat.audio} type="audio/mpeg" />
+                </audio>
+
+                <select
+                  className="licenseSelect"
+                  value={licenseType}
+                  onChange={(e) =>
+                    setSelectedLicenses({
+                      ...selectedLicenses,
+                      [beat.audio]: e.target.value,
+                    })
+                  }
+                >
+                  {licenseOptions.map((license) => (
+                    <option key={license.name} value={license.name}>
+                      {license.name} — {license.price}
+                    </option>
+                  ))}
+                </select>
+
+                <div className="cardBottom">
+                  <strong>{licensePrice}</strong>
+
+                  <button onClick={() => buyBeat(beat)}>
+                    Buy Lease
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      <section id="licenses" className="section">
+        <h2>License Options</h2>
+
+        <div className="licenseGrid">
+          <div className="licenseCard">
+            <h3>Basic Lease</h3>
+            <strong>$29</strong>
+            <p>MP3 file, non-exclusive use.</p>
+          </div>
+
+          <div className="licenseCard">
+            <h3>Premium Lease</h3>
+            <strong>$79</strong>
+            <p>MP3 + WAV delivery.</p>
+          </div>
+
+          <div className="licenseCard">
+            <h3>Exclusive</h3>
+            <strong>$299</strong>
+            <p>Full exclusive rights.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="contact" className="contactBox">
+        <div>
+          <h2>Ready to Build Your Next Track?</h2>
+          <p>
+            Contact TrifeBeats for custom beats, exclusives, or artist packages.
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+
+        <button>Contact TrifeBeats</button>
+      </section>
+    </main>
   );
 }
