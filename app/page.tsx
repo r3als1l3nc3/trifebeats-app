@@ -88,9 +88,7 @@ export default function HomePage() {
   beatTitle: beat.title,
   licenseType,
 }),
-        }),
-      }
-    );
+});
 
     const data = await res.json();
 

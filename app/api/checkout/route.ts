@@ -53,7 +53,9 @@ export async function POST(req: Request) {
       cancel_url: `${siteUrl}/cancel`,
     });
 
-    return NextResponse.json({ url: session.url });
+    return NextResponse.json({
+      url: session.url,
+    });
   } catch (error) {
     console.error("Stripe checkout error:", error);
 
