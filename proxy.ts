@@ -1,10 +1,6 @@
 import { NextRequest } from "next/server";
 
-export const config = {
-  matcher: ["/admin/:path*"],
-};
-
-export function middleware(req: NextRequest) {
+export function proxys(req: NextRequest) {
   const username = process.env.ADMIN_USERNAME || "admin";
   const password = process.env.ADMIN_PASSWORD;
 
