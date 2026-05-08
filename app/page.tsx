@@ -85,8 +85,9 @@ export default function HomePage() {
             "application/json",
         },
         body: JSON.stringify({
-          beatTitle: `${beat.title} - ${licenseType}`,
-          price,
+  beatTitle: beat.title,
+  licenseType,
+}),
         }),
       }
     );
