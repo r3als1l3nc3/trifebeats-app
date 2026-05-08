@@ -10,10 +10,13 @@ type Beat = {
   mood: string;
   price: string;
   audio: string;
- cover: string;
+  cover: string;
 };
 
 export default function AdminPage() {
+  const [unlocked, setUnlocked] = useState(false);
+  const [passwordInput, setPasswordInput] = useState("");
+
   const [beats, setBeats] = useState<Beat[]>([]);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -28,12 +31,20 @@ export default function AdminPage() {
     cover: "/cover.png",
   });
 
+  function checkPassword(e: React.FormEvent) {
+    e.preventDefault();
+
+    if (passwordInput === process.env.NEXT_PUBLIC_ADMIN_PASSWORD) {
+      setUnlocked(true);
+    } else {
+      alert("Wrong password");
+    }
+  }
+
   async function loadBeats() {
     setLoading(true);
 
-    const { data, error } = await supabase
-      .from("beats")
-      .select("*");
+    const { data, error } = await supabase.from("beats").select("*");
 
     if (error) {
       alert(`Error loading beats: ${error.message}`);
@@ -46,8 +57,10 @@ export default function AdminPage() {
   }
 
   useEffect(() => {
-    loadBeats();
-  }, []);
+    if (unlocked) {
+      loadBeats();
+    }
+  }, [unlocked]);
 
   async function uploadMp3(file: File) {
     setUploading(true);
@@ -60,9 +73,7 @@ export default function AdminPage() {
 
     const filePath = `${Date.now()}-${safeFileName}`;
 
-    const { error } = await supabase.storage
-      .from("beats")
-      .upload(filePath, file);
+    const { error } = await supabase.storage.from("beats").upload(filePath, file);
 
     if (error) {
       alert(`MP3 upload failed: ${error.message}`);
@@ -71,9 +82,7 @@ export default function AdminPage() {
       return;
     }
 
-    const { data } = supabase.storage
-      .from("beats")
-      .getPublicUrl(filePath);
+    const { data } = supabase.storage.from("beats").getPublicUrl(filePath);
 
     setForm((current) => ({
       ...current,
@@ -81,36 +90,28 @@ export default function AdminPage() {
     }));
 
     setUploading(false);
-
     alert("MP3 uploaded successfully");
   }
 
   async function addBeat(e: React.FormEvent) {
     e.preventDefault();
 
-    if (
-      !form.title ||
-      !form.genre ||
-      !form.bpm ||
-      !form.audio
-    ) {
+    if (!form.title || !form.genre || !form.bpm || !form.audio) {
       alert("Please complete all required fields.");
       return;
     }
 
-    const { error } = await supabase
-      .from("beats")
-      .insert([
-        {
-          title: form.title,
-          genre: form.genre,
-          bpm: Number(form.bpm),
-          mood: form.mood,
-          price: form.price,
-          audio: form.audio,
-          cover: form.cover,
-        },
-      ]);
+    const { error } = await supabase.from("beats").insert([
+      {
+        title: form.title,
+        genre: form.genre,
+        bpm: Number(form.bpm),
+        mood: form.mood,
+        price: form.price,
+        audio: form.audio,
+        cover: form.cover,
+      },
+    ]);
 
     if (error) {
       alert(`Insert failed: ${error.message}`);
@@ -129,19 +130,14 @@ export default function AdminPage() {
     });
 
     await loadBeats();
-
     alert("Beat added live");
   }
 
   async function deleteBeat(audio: string) {
     const confirmDelete = confirm("Delete this beat?");
-
     if (!confirmDelete) return;
 
-    const { error } = await supabase
-      .from("beats")
-      .delete()
-      .eq("audio", audio);
+    const { error } = await supabase.from("beats").delete().eq("audio", audio);
 
     if (error) {
       alert(`Delete failed: ${error.message}`);
@@ -150,8 +146,54 @@ export default function AdminPage() {
     }
 
     await loadBeats();
-
     alert("Beat deleted");
+  }
+
+  if (!unlocked) {
+    return (
+      <main className="adminSite">
+        <section
+          className="adminPanel"
+          style={{
+            maxWidth: "460px",
+            margin: "120px auto",
+            textAlign: "center",
+          }}
+        >
+          <h1 style={{ color: "#facc15", fontSize: "42px", marginBottom: "10px" }}>
+            TRIFEBEATS ADMIN
+          </h1>
+
+          <p style={{ color: "#aaa", marginBottom: "28px" }}>
+            Enter admin password to continue.
+          </p>
+
+          <form onSubmit={checkPassword}>
+            <input
+              type="password"
+              placeholder="Admin password"
+              value={passwordInput}
+              onChange={(e) => setPasswordInput(e.target.value)}
+            />
+
+            <button type="submit">UNLOCK ADMIN</button>
+          </form>
+
+          <a
+            href="/"
+            style={{
+              display: "inline-block",
+              marginTop: "22px",
+              color: "#facc15",
+              textDecoration: "none",
+              fontWeight: "bold",
+            }}
+          >
+            ← Back to Store
+          </a>
+        </section>
+      </main>
+    );
   }
 
   return (
@@ -195,66 +237,39 @@ export default function AdminPage() {
             type="text"
             placeholder="Beat title"
             value={form.title}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                title: e.target.value,
-              })
-            }
+            onChange={(e) => setForm({ ...form, title: e.target.value })}
           />
 
           <input
             type="text"
             placeholder="Genre"
             value={form.genre}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                genre: e.target.value,
-              })
-            }
+            onChange={(e) => setForm({ ...form, genre: e.target.value })}
           />
 
           <input
             type="number"
             placeholder="BPM"
             value={form.bpm}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                bpm: e.target.value,
-              })
-            }
+            onChange={(e) => setForm({ ...form, bpm: e.target.value })}
           />
 
           <input
             type="text"
             placeholder="Mood"
             value={form.mood}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                mood: e.target.value,
-              })
-            }
+            onChange={(e) => setForm({ ...form, mood: e.target.value })}
           />
 
           <input
             type="text"
             placeholder="$29"
             value={form.price}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                price: e.target.value,
-              })
-            }
+            onChange={(e) => setForm({ ...form, price: e.target.value })}
           />
 
           <label className="uploadButton">
-            {uploading
-              ? "UPLOADING MP3..."
-              : "CHOOSE MP3 FILE"}
+            {uploading ? "UPLOADING MP3..." : "CHOOSE MP3 FILE"}
 
             <input
               type="file"
@@ -274,50 +289,30 @@ export default function AdminPage() {
             type="text"
             placeholder="Audio URL will appear here"
             value={form.audio}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                audio: e.target.value,
-              })
-            }
+            onChange={(e) => setForm({ ...form, audio: e.target.value })}
           />
 
           <input
             type="text"
             placeholder="/cover.png"
             value={form.cover}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                cover: e.target.value,
-              })
-            }
+            onChange={(e) => setForm({ ...form, cover: e.target.value })}
           />
 
-          <button type="submit">
-            ADD BEAT LIVE
-          </button>
+          <button type="submit">ADD BEAT LIVE</button>
         </form>
 
         <div className="adminPanel libraryPanel">
           <div className="libraryHeader">
             <h2>BEAT LIBRARY</h2>
 
-            <button onClick={loadBeats}>
-              REFRESH
-            </button>
+            <button onClick={loadBeats}>REFRESH</button>
           </div>
 
-          {loading && (
-            <p className="adminMuted">
-              Loading beats...
-            </p>
-          )}
+          {loading && <p className="adminMuted">Loading beats...</p>}
 
           {!loading && beats.length === 0 && (
-            <p className="adminMuted">
-              No beats found in Supabase.
-            </p>
+            <p className="adminMuted">No beats found in Supabase.</p>
           )}
 
           <div className="beatList">
@@ -365,8 +360,7 @@ export default function AdminPage() {
                       marginBottom: "8px",
                     }}
                   >
-                    {beat.genre} • {beat.bpm} BPM •{" "}
-                    {beat.mood}
+                    {beat.genre} • {beat.bpm} BPM • {beat.mood}
                   </p>
 
                   <span
@@ -387,19 +381,11 @@ export default function AdminPage() {
                       maxWidth: "500px",
                     }}
                   >
-                    <source
-                      src={beat.audio}
-                      type="audio/mpeg"
-                    />
+                    <source src={beat.audio} type="audio/mpeg" />
                   </audio>
                 </div>
 
-                <button
-                  className="deleteButton"
-                  onClick={() =>
-                    deleteBeat(beat.audio)
-                  }
-                >
+                <button className="deleteButton" onClick={() => deleteBeat(beat.audio)}>
                   DELETE
                 </button>
               </div>

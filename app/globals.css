@@ -564,4 +564,45 @@ body {
 
 .licenseSelect:focus {
   border-color: #facc15;
+}.adminLogin {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #050505;
+}
+
+.loginCard {
+  width: 420px;
+  background: #111;
+  border: 1px solid rgba(250,204,21,.25);
+  border-radius: 20px;
+  padding: 40px;
+}
+
+.loginCard h1 {
+  color: #facc15;
+  margin-bottom: 24px;
+}
+
+.loginCard input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid #333;
+  background: #000;
+  color: white;
+  margin-bottom: 20px;
+}
+
+.loginCard button {
+  width: 100%;
+  padding: 16px;
+  border: 0;
+  border-radius: 12px;
+  background: #facc15;
+  color: black;
+  font-weight: 900;
+  cursor: pointer;
 }
